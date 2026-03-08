@@ -145,8 +145,6 @@ public class ActivityAIService {
         {
           "analysis": {
             "overall": "Overall analysis here",
-            "pace": "Pace analysis here",
-            "heartRate": "Heart rate analysis here",
             "caloriesBurned": "Calories analysis here"
           },
           "improvements": [
@@ -173,7 +171,11 @@ public class ActivityAIService {
         Calories Burned: %d
         Additional Metrics: %s
         
-        Provide detailed analysis focusing on performance, improvements, next workout suggestions, and safety guidelines.
+        Provide concise analysis (maximum 150 words total).
+        Do NOT repeat information.
+        Use short and clear sentences.
+        Use short bullet-style sentences.
+        Avoid long explanations.
         Ensure the response follows the EXACT JSON format shown above.
         """,
                 activity.getType(),

@@ -1,24 +1,98 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
+import { useTheme } from "./context/ThemeContext";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "react-oauth2-code-pkce";
-import { useDispatch } from "react-redux";
-import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from "react-router";
-import { setCredentials } from "./store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation, useNavigate } from "react-router";
+import { setCredentials, logout } from "./store/authSlice";
 import ActivityForm from "./components/ActivityForm";
 import ActivityList from "./components/ActivityList";
 import ActivityDetail from "./components/ActivityDetail";
+import ProfileSetup from "./components/ProfileSetup";
+import Navbar from "./components/Navbar";
+import Overview from "./components/Overview";
+import { getProfile } from "./services/api";
+import "./App.css";
 
 const ActvitiesPage = () => {
-  return (<Box sx={{ p: 2, border: '1px dashed grey' }}>
-    <ActivityForm onActivitiesAdded={() => window.location.reload()} />
-    <ActivityList />
-  </Box>);
+  const { mode } = useTheme();
+
+  return (
+    <Box sx={{ backgroundColor: mode === 'dark' ? '#0a0a0a' : '#f5f5f5', minHeight: '100vh' }}>
+      <Overview />
+      <Box sx={{
+        p: 3,
+        backgroundColor: mode === 'dark' ? '#0a0a0a' : '#f5f5f5',
+        borderTop: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0',
+        mt: 0
+      }}>
+        <Typography variant="h6" sx={{
+          fontWeight: 'bold',
+          color: mode === 'dark' ? '#fff' : '#333',
+          mb: 3
+        }}>
+          Log New Activity
+        </Typography>
+        <ActivityForm onActivitiesAdded={() => window.location.reload()} />
+
+        <Typography variant="h6" sx={{
+          fontWeight: 'bold',
+          color: mode === 'dark' ? '#fff' : '#333',
+          mb: 3,
+          mt: 4
+        }}>
+          Your Activities
+        </Typography>
+        <ActivityList />
+      </Box>
+    </Box>
+  );
 }
+
+const AppRoutes = ({ logOut }) => {
+  const userId = useSelector((state) => state.auth.userId);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (userId && location.pathname !== "/profile-setup") {
+      getProfile()
+        .then(() => {
+          // Profile exists, stay on current page or dashboard
+        })
+       .catch((error) => {
+  if (error.response?.status === 404) {
+    navigate("/profile-setup");
+  }
+});
+    }
+  }, [userId, navigate, location.pathname]);
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Navbar onLogout={logOut} />
+      <Box sx={{ p: 2, flex: 1 }}>
+        <Routes>
+          <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/activities" element={<ActvitiesPage />} />
+          <Route path="/activities/:id" element={<ActivityDetail />} />
+          <Route path="/" element={<Navigate to="/activities" replace />} />
+        </Routes>
+      </Box>
+    </Box>
+  );
+};
 
 function App() {
   const { token, tokenData, logIn, logOut, isAuthenticated } = useContext(AuthContext);
   const dispatch = useDispatch();
   const [authReady, setAuthReady] = useState(false);
+
+  // make sure we clear Redux when the user logs out via auth context
+  const handleLogout = () => {
+    logOut();
+    dispatch(logout());
+  };
 
   useEffect(() => {
     if (token) {
@@ -53,24 +127,7 @@ function App() {
           </Button>
         </Box>
       ) : (
-        // <div>
-        //   <pre>{JSON.stringify(tokenData, null, 2)}</pre>
-        //   <pre>{JSON.stringify(token, null, 2)}</pre>
-        // </div>
-
-
-
-        <Box sx={{ p: 2, border: '1px dashed grey' }}>
-          <Button variant="contained" color="secondary" onClick={logOut}>
-            Logout
-          </Button>
-          <Routes>
-            <Route path="/activities" element={<ActvitiesPage />} />
-            <Route path="/activities/:id" element={<ActivityDetail />} />
-
-            <Route path="/" element={token ? <Navigate to="/activities" replace /> : <div>Welcome! Please Login.</div>} />
-          </Routes>
-        </Box>
+        <AppRoutes logOut={handleLogout} />
       )}
     </Router>
   )

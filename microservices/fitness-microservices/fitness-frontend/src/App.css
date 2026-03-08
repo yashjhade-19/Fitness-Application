@@ -1,42 +1,100 @@
+/* Global reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* App root layout */
 #root {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
+  min-height: 100vh;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Page background */
+body {
+  font-family: "Inter", "Roboto", sans-serif;
+  background: linear-gradient(135deg, #f5f7fa, #e4ecf7);
+  color: #1a1a1a;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Main container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
+/* Card styling improvement */
 .card {
-  padding: 2em;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
 }
 
-.read-the-docs {
-  color: #888;
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+}
+
+/* Section titles */
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Activity highlight */
+.highlight {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Bullet list styling */
+.bullet-item {
+  padding-left: 8px;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+/* Divider spacing */
+.divider {
+  margin: 20px 0;
+}
+
+/* Buttons */
+button {
+  border-radius: 8px;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* Loading state */
+.loading {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 40px;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+
+  #root {
+    padding: 1rem;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
 }

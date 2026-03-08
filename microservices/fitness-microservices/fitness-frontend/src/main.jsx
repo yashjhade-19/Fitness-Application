@@ -7,14 +7,17 @@ import { store } from './store/store'
 import App from './App'
 import { AuthProvider } from 'react-oauth2-code-pkce'
 import { authConfig } from './authConfig'
+import { ThemeProviderWrapper } from './context/ThemeContext'
 
 // As of React 18
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <AuthProvider authConfig={authConfig}
-                loadingComponent={<div>Loading...</div>}>
+    loadingComponent={<div>Loading...</div>}>
     <Provider store={store}>
-      <App />
+      <ThemeProviderWrapper>
+        <App />
+      </ThemeProviderWrapper>
     </Provider>
   </AuthProvider>,
 )

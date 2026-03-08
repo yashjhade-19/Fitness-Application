@@ -1,5 +1,7 @@
 package com.fitness.activityservice.service;
 
+import com.fitness.activityservice.client.UserProfileClient;
+import com.fitness.activityservice.dto.UserProfileResponse;
 import com.fitness.activityservice.dto.ActivityRequest;
 import com.fitness.activityservice.dto.ActivityResponse;
 import com.fitness.activityservice.model.Activity;
@@ -16,29 +18,40 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ActivityService {
     private final ActivityRepository activityRepository;
-    private final UserValidationService userValidationService;
+    private final UserProfileClient userProfileClient;
     private final KafkaTemplate<String,Activity> kafkaTemplate;
+    private final CalorieCalculatorService calorieCalculatorService;
+
 
     @Value("${kafka.topic.name}")
     private String topicName;
 
     public ActivityResponse trackActivity(ActivityRequest request) {
 
-        boolean isValidUser =userValidationService.validateUser(request.getUserId());
+        UserProfileResponse profile =
+                userProfileClient.getUserProfile(request.getUserId());
 
-        if(!isValidUser){
-            throw new RuntimeException("Invalid user : "+ request.getUserId());
+        if (profile == null) {
+            throw new RuntimeException("User profile not found for user: " + request.getUserId());
         }
 
+        Integer calculatedCalories = calorieCalculatorService.calculateCalories(
+                request.getType(),
+                profile.getWeightKg(),
+                request.getDuration()
+        );
+
+        // 🔜 Calories will be calculated in NEXT STEP
         Activity activity = Activity.builder()
                 .userId(request.getUserId())
                 .type(request.getType())
                 .duration(request.getDuration())
-                .caloriesBurned(request.getCaloriesBurned())
+                .caloriesBurned(calculatedCalories)
                 .startTime(request.getStartTime())
                 .additionalMetrics(request.getAdditionalMetrics())
                 .build();
         Activity savedActivity = activityRepository.save(activity);
+
 
         try {
             kafkaTemplate.send(topicName,savedActivity.getUserId(), savedActivity);
