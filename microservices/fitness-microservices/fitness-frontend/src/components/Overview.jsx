@@ -1,0 +1,196 @@
+import { Box, Card, CardContent, Typography, Grid, Avatar } from "@mui/material";
+import { useState, useEffect } from "react";
+import { getActivities } from "../services/api";
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { useTheme } from "../context/ThemeContext";
+
+const Overview = () => {
+    const [activities, setActivities] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { mode } = useTheme();
+
+    useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const response = await getActivities();
+                const activitiesData = response?.data || response || [];
+                console.log("Activities data:", activitiesData);
+                setActivities(activitiesData);
+            } catch (error) {
+                console.error("Error fetching activities:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchActivities();
+    }, []);
+
+    // Calculate metrics from activities data
+    const calculateMetrics = () => {
+        if (!activities || activities.length === 0) {
+            return {
+                totalActivities: 0,
+                totalCalories: 0,
+                totalTime: 0,
+                avgCalories: 0,
+                timeFormatted: "0h 0m"
+            };
+        }
+
+        const totalActivities = activities.length;
+        const totalCalories = activities.reduce((sum, activity) => sum + (activity.caloriesBurned || 0), 0);
+        const totalTimeMinutes = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0);
+
+        const hours = Math.floor(totalTimeMinutes / 60);
+        const minutes = totalTimeMinutes % 60;
+        const timeFormatted = `${hours}h ${minutes}m`;
+
+        const avgCalories = totalActivities > 0 ? Math.round(totalCalories / totalActivities) : 0;
+
+        return {
+            totalActivities,
+            totalCalories,
+            totalTime: totalTimeMinutes,
+            avgCalories,
+            timeFormatted
+        };
+    };
+
+    const metrics = calculateMetrics();
+
+    if (loading) {
+        return (
+            <Box sx={{
+                p: 3,
+                minHeight: '400px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <Typography sx={{ color: mode === 'dark' ? '#fff' : '#333' }}>
+                    Loading overview...
+                </Typography>
+            </Box>
+        );
+    }
+
+    const StatCard = ({ title, value, subtitle, icon: Icon, color }) => (
+        <Card sx={{
+            backgroundColor: mode === 'dark' ? '#1a1a1a' : '#ffffff',
+            border: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0',
+            borderRadius: 3,
+            boxShadow: mode === 'dark'
+                ? '0 2px 8px rgba(0,0,0,0.3)'
+                : '0 2px 8px rgba(0,0,0,0.1)',
+            height: '100%',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: mode === 'dark'
+                    ? '0 4px 16px rgba(0,0,0,0.4)'
+                    : '0 4px 16px rgba(0,0,0,0.15)',
+            }
+        }}>
+            <CardContent sx={{ p: 3, position: 'relative', height: '100%' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                        <Typography variant="body2" sx={{
+                            color: mode === 'dark' ? '#999' : '#666',
+                            mb: 1,
+                            fontWeight: 500
+                        }}>
+                            {title}
+                        </Typography>
+                        <Typography variant="h3" sx={{
+                            color: mode === 'dark' ? '#fff' : '#333',
+                            fontWeight: 'bold',
+                            mb: 1
+                        }}>
+                            {value}
+                        </Typography>
+                        <Typography variant="body2" sx={{
+                            color: mode === 'dark' ? '#666' : '#888'
+                        }}>
+                            {subtitle}
+                        </Typography>
+                    </Box>
+                    <Avatar sx={{
+                        backgroundColor: color,
+                        width: 60,
+                        height: 60,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <Icon sx={{ fontSize: 32, color: '#fff' }} />
+                    </Avatar>
+                </Box>
+            </CardContent>
+        </Card>
+    );
+
+    return (
+        <Box sx={{
+            p: 3,
+            color: mode === 'dark' ? '#fff' : '#333'
+        }}>
+            {/* Title */}
+            <Typography variant="h5" sx={{
+                fontWeight: 'bold',
+                color: mode === 'dark' ? '#fff' : '#333',
+                mb: 4
+            }}>
+                Overview
+            </Typography>
+
+            {/* Stats Grid */}
+            <Grid container spacing={3}>
+                <Grid item xs={12} sm={6} md={3}>
+                    <StatCard
+                        title="Total Activities"
+                        value={metrics.totalActivities}
+                        subtitle="All time"
+                        icon={FitnessCenterIcon}
+                        color="rgba(255, 193, 7, 0.3)"
+                    />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                    <StatCard
+                        title="Calories Burned"
+                        value={metrics.totalCalories.toLocaleString()}
+                        subtitle="Total calories"
+                        icon={LocalFireDepartmentIcon}
+                        color="rgba(244, 67, 54, 0.3)"
+                    />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                    <StatCard
+                        title="Time Spent"
+                        value={metrics.timeFormatted}
+                        subtitle="Active time"
+                        icon={AccessTimeIcon}
+                        color="rgba(33, 150, 243, 0.3)"
+                    />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                    <StatCard
+                        title="Avg per Activity"
+                        value={metrics.avgCalories}
+                        subtitle="Calories"
+                        icon={TrendingUpIcon}
+                        color="rgba(76, 175, 80, 0.3)"
+                    />
+                </Grid>
+            </Grid>
+        </Box>
+    );
+};
+
+export default Overview;
