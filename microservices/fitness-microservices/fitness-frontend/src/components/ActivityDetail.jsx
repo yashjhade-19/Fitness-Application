@@ -60,6 +60,11 @@ const ActivityDetail = () => {
           </Typography>
 
           <Typography>
+            Fat Loss Estimated: {activity.fatLossEstimated ?? 0} grams
+          </Typography>
+
+
+          <Typography>
             Date: {new Date(activity.createdAt).toLocaleString('en-IN')}
           </Typography>
 

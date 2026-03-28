@@ -32,6 +32,7 @@ const ActivityList = () => {
               <Typography variant="h6">{activity.type}</Typography>
               <Typography>Duration: {activity.duration}</Typography>
               <Typography>Calories: {activity.caloriesBurned}</Typography>
+              <Typography>Fat Loss Estimated: {activity.fatLossEstimated}</Typography>
             </CardContent>
           </Card>
         </Grid>

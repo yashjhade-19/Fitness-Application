@@ -23,6 +23,7 @@ public class Activity {
     private ActivityType type;
     private Integer duration;
     private Integer caloriesBurned;
+    private Integer fatLossEstimated;
     private LocalDateTime startTime;
 
     @Field("metrics")

@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Typography, Grid, Avatar } from "@mui/material";
 import { useState, useEffect } from "react";
-import { getActivities } from "../services/api";
+import { getActivities, getProfile } from "../services/api";
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -10,6 +10,8 @@ import { useTheme } from "../context/ThemeContext";
 const Overview = () => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [profile, setProfile] = useState(null);
+    const [bmr, setBmr] = useState(0);
     const { mode } = useTheme();
 
     useEffect(() => {
@@ -29,6 +31,25 @@ const Overview = () => {
         fetchActivities();
     }, []);
 
+    // fetch user profile for BMR calculation
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await getProfile();
+                const profileData = response?.data || response || null;
+                setProfile(profileData);
+                if (profileData) {
+                    const calculated = calculateBmr(profileData);
+                    setBmr(calculated);
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
     // Calculate metrics from activities data
     const calculateMetrics = () => {
         if (!activities || activities.length === 0) {
@@ -44,6 +65,7 @@ const Overview = () => {
         const totalActivities = activities.length;
         const totalCalories = activities.reduce((sum, activity) => sum + (activity.caloriesBurned || 0), 0);
         const totalTimeMinutes = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0);
+        const totalFatLoss = activities.reduce((sum, activity) => sum + (activity.fatLossEstimated || 0), 0);
 
         const hours = Math.floor(totalTimeMinutes / 60);
         const minutes = totalTimeMinutes % 60;
@@ -56,11 +78,27 @@ const Overview = () => {
             totalCalories,
             totalTime: totalTimeMinutes,
             avgCalories,
-            timeFormatted
+            timeFormatted,
+            totalFatLoss
         };
     };
 
     const metrics = calculateMetrics();
+
+    // helper to compute BMR from profile
+    const calculateBmr = (prof) => {
+        if (!prof) return 0;
+        const { weightKg, heightCm, age, gender } = prof;
+        if (!weightKg || !heightCm || !age || !gender) return 0;
+        let base = 10 * weightKg + 6.25 * heightCm - 5 * age;
+        const sex = gender.toString().toUpperCase();
+        if (sex === "MALE" || sex === "M") {
+            base += 5;
+        } else {
+            base -= 161;
+        }
+        return Math.round(base);
+    };
 
     if (loading) {
         return (
@@ -186,6 +224,26 @@ const Overview = () => {
                         subtitle="Calories"
                         icon={TrendingUpIcon}
                         color="rgba(76, 175, 80, 0.3)"
+                    />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                    <StatCard
+                        title="Daily BMR"
+                        value={bmr || "-"}
+                        subtitle="Basal Metabolic Rate"
+                        icon={LocalFireDepartmentIcon}
+                        color="rgba(255, 152, 0, 0.3)"
+                    />
+                </Grid>
+
+                <Grid item xs={12} sm={6} md={3}>
+                    <StatCard
+                        title="Total Fat Loss"
+                        value={`${metrics.totalFatLoss}g`}
+                        subtitle="Estimated"
+                        icon={TrendingUpIcon}
+                        color="rgba(156, 39, 176, 0.3)"
                     />
                 </Grid>
             </Grid>

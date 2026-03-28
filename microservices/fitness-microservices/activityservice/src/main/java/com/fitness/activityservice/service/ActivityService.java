@@ -21,6 +21,7 @@ public class ActivityService {
     private final UserProfileClient userProfileClient;
     private final KafkaTemplate<String,Activity> kafkaTemplate;
     private final CalorieCalculatorService calorieCalculatorService;
+    private final FatLossCalculatorService fatLossCalculatorService;
 
 
     @Value("${kafka.topic.name}")
@@ -39,14 +40,17 @@ public class ActivityService {
                 request.getType(),
                 profile.getWeightKg(),
                 request.getDuration()
-        );
+        ); // 🔜 Calories will be calculated in NEXT STEP
 
-        // 🔜 Calories will be calculated in NEXT STEP
+        Integer fatLossGrams = fatLossCalculatorService.calculateFatLossGrams(calculatedCalories);
+
+       
         Activity activity = Activity.builder()
                 .userId(request.getUserId())
                 .type(request.getType())
                 .duration(request.getDuration())
                 .caloriesBurned(calculatedCalories)
+                .fatLossEstimated(fatLossGrams)
                 .startTime(request.getStartTime())
                 .additionalMetrics(request.getAdditionalMetrics())
                 .build();
@@ -68,6 +72,7 @@ public class ActivityService {
         response.setType(activity.getType());
         response.setDuration(activity.getDuration());
         response.setCaloriesBurned(activity.getCaloriesBurned());
+        response.setFatLossEstimated(activity.getFatLossEstimated());
         response.setStartTime(activity.getStartTime());
         response.setAdditionalMetrics(activity.getAdditionalMetrics());
         response.setCreatedAt(activity.getCreatedAt());

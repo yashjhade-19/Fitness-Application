@@ -13,6 +13,7 @@ public class ActivityResponse {
     private ActivityType type;
     private Integer duration;
     private Integer caloriesBurned;
+    private Integer fatLossEstimated;
     private LocalDateTime startTime;
     private Map<String, Object> additionalMetrics;
     private LocalDateTime createdAt;
