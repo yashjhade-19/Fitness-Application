@@ -36,4 +36,20 @@ public class UserProfileController {
     ) {
         return ResponseEntity.ok(userProfileService.updateProfile(userId, request));
     }
+
+
+    @PostMapping("/claim-login-reward")
+    public ResponseEntity<UserProfile> claimLoginReward(
+            @RequestHeader("X-User-ID") String userId
+    ) {
+        return ResponseEntity.ok(userProfileService.claimLoginReward(userId));
+    }
+
+
+    @PostMapping("/claim-goal-reward")
+    public ResponseEntity<UserProfile> claimGoalReward(
+            @RequestHeader("X-User-ID") String userId
+    ) {
+        return ResponseEntity.ok(userProfileService.claimGoalReward(userId));
+    }
 }

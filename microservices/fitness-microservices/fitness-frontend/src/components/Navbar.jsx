@@ -1,19 +1,27 @@
 import { Box, Button, Typography, Avatar, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, IconButton } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { logout } from "../store/authSlice";
-import { logoutUser, updateProfile, getProfile } from "../services/api";
+import { logoutUser, updateProfile, getProfile, claimGoalReward, getActivities } from "../services/api";
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useTheme } from "../context/ThemeContext";
+import GamificationModal from "./GamificationModal";
 import "../styles/Navbar.css";
 
 const Navbar = ({ onLogout }) => {
     const user = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
-    const navigate = useNavigate(); const { mode, toggleTheme } = useTheme(); const [openProfileDialog, setOpenProfileDialog] = useState(false);
+    const navigate = useNavigate();
+    const { mode, toggleTheme } = useTheme();
+    const [openProfileDialog, setOpenProfileDialog] = useState(false);
+    const [totalCoins, setTotalCoins] = useState(0);
+    const [badge, setBadge] = useState("Beginner");
+    const [showGoalModal, setShowGoalModal] = useState(false);
+    const [activities, setActivities] = useState([]);
+    const [profile, setProfile] = useState(null);
     const [profileData, setProfileData] = useState({
         firstName: user?.given_name || "",
         lastName: user?.family_name || "",
@@ -34,6 +42,45 @@ const Navbar = ({ onLogout }) => {
         }
         return user?.email?.[0]?.toUpperCase() || "A";
     };
+
+    // Fetch profile and coins
+    useEffect(() => {
+        const fetchCoins = async () => {
+            try {
+                const response = await getProfile();
+                const profileData = response?.data || response;
+                setProfile(profileData);
+                setTotalCoins(profileData?.totalCoins || 0);
+
+                // Calculate badge
+                const coins = profileData?.totalCoins || 0;
+                if (coins >= 1000) {
+                    setBadge("Gold");
+                } else if (coins >= 500) {
+                    setBadge("Silver");
+                } else if (coins >= 200) {
+                    setBadge("Bronze");
+                } else {
+                    setBadge("Beginner");
+                }
+            } catch (error) {
+                console.error("Error fetching coins:", error);
+            }
+        };
+
+        const fetchActivities = async () => {
+            try {
+                const response = await getActivities();
+                const activitiesData = response?.data || response || [];
+                setActivities(activitiesData);
+            } catch (error) {
+                console.error("Error fetching activities:", error);
+            }
+        };
+
+        fetchCoins();
+        fetchActivities();
+    }, []);
 
     const handleProfileClick = async () => {
         setProfileLoading(true);
@@ -150,6 +197,48 @@ const Navbar = ({ onLogout }) => {
         return user?.name || user?.email || "User";
     };
 
+    const getBadgeEmoji = () => {
+        switch (badge) {
+            case "Gold":
+                return "🥇";
+            case "Silver":
+                return "🥈";
+            case "Bronze":
+                return "🥉";
+            default:
+                return "⭐";
+        }
+    };
+
+    const handleFitCoinsClick = () => {
+        // Check if goal can be claimed
+        const today = new Date().toISOString().split('T')[0];
+        const lastGoalRewardDate = profile?.lastGoalRewardDate || "";
+
+        if (activities.length > 0) {
+            const todayActivities = activities.filter(activity => {
+                const activityDate = new Date(activity.createdAt).toISOString().split('T')[0];
+                return activityDate === today;
+            });
+            const todayCalories = todayActivities.reduce((sum, activity) => sum + (activity.caloriesBurned || 0), 0);
+
+            // Show modal only if goal is met and not already claimed today
+            if (todayCalories >= 200 && lastGoalRewardDate !== today) {
+                setShowGoalModal(true);
+            }
+        }
+    };
+
+    const handleClaimGoal = async () => {
+        try {
+            await claimGoalReward();
+            setShowGoalModal(false);
+            window.location.reload();
+        } catch (error) {
+            console.error("Error claiming goal reward:", error);
+        }
+    };
+
     return (
         <>
             <Box className="navbar-container">
@@ -165,7 +254,54 @@ const Navbar = ({ onLogout }) => {
                     </Box>
                 </Box>
 
-                <Box className="navbar-center">
+                <Box className="navbar-center" sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                    {/* FitCoins Display */}
+                    <Box
+                        onClick={handleFitCoinsClick}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            backgroundColor: mode === 'dark' ? '#2a2a2a' : '#f5f5f5',
+                            px: 2,
+                            py: 1,
+                            borderRadius: 2,
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                                backgroundColor: mode === 'dark' ? '#333' : '#e0e0e0',
+                                transform: 'scale(1.05)'
+                            }
+                        }}
+                    >
+                        <Typography sx={{ fontSize: 20 }}>🪙</Typography>
+                        <Typography variant="body2" sx={{
+                            color: mode === 'dark' ? '#fff' : '#333',
+                            fontWeight: 'bold'
+                        }}>
+                            {totalCoins} FitCoins
+                        </Typography>
+                    </Box>
+
+                    {/* Badge Display */}
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        backgroundColor: mode === 'dark' ? '#2a2a2a' : '#f5f5f5',
+                        px: 2,
+                        py: 1,
+                        borderRadius: 2
+                    }}>
+                        <Typography sx={{ fontSize: 20 }}>{getBadgeEmoji()}</Typography>
+                        <Typography variant="body2" sx={{
+                            color: mode === 'dark' ? '#fff' : '#333',
+                            fontWeight: 'bold'
+                        }}>
+                            {badge}
+                        </Typography>
+                    </Box>
+
                     <NotificationsOutlinedIcon className="navbar-icon" />
                 </Box>
 
@@ -323,6 +459,16 @@ const Navbar = ({ onLogout }) => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Gamification Modal */}
+            <GamificationModal
+                open={showGoalModal}
+                onClose={() => setShowGoalModal(false)}
+                title="Congratulations!"
+                message="You earned +25 FitCoins for completing your daily goal!"
+                coins={25}
+                onClaim={handleClaimGoal}
+            />
         </>
     );
 };

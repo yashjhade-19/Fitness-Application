@@ -35,6 +35,13 @@ public class UserProfile {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    // 🎮 Gamification fields
+    private Integer totalCoins = 0;
+
+    private String lastLoginDate;
+
+    private String lastGoalRewardDate;
+
     @PrePersist
     void onCreate() {
         createdAt = LocalDateTime.now();

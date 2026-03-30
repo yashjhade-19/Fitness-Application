@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography, Grid, Avatar } from "@mui/material";
+import { Box, Card, CardContent, Typography, Grid, Avatar, CircularProgress } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getActivities, getProfile } from "../services/api";
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
@@ -6,6 +6,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { useTheme } from "../context/ThemeContext";
+import ActivityCharts from "./ActivityCharts";
 
 const Overview = () => {
     const [activities, setActivities] = useState([]);
@@ -48,7 +49,7 @@ const Overview = () => {
         };
 
         fetchProfile();
-    }, []);
+    }, [activities]);
 
     // Calculate metrics from activities data
     const calculateMetrics = () => {
@@ -58,7 +59,8 @@ const Overview = () => {
                 totalCalories: 0,
                 totalTime: 0,
                 avgCalories: 0,
-                timeFormatted: "0h 0m"
+                timeFormatted: "0h 0m",
+                todayCalories: 0
             };
         }
 
@@ -66,6 +68,15 @@ const Overview = () => {
         const totalCalories = activities.reduce((sum, activity) => sum + (activity.caloriesBurned || 0), 0);
         const totalTimeMinutes = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0);
         const totalFatLoss = activities.reduce((sum, activity) => sum + (activity.fatLossEstimated || 0), 0);
+
+        // Calculate today's calories
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+        const todayActivities = activities.filter(activity => {
+            const activityDate = new Date(activity.createdAt).toISOString().split('T')[0];
+            return activityDate === todayString;
+        });
+        const todayCalories = todayActivities.reduce((sum, activity) => sum + (activity.caloriesBurned || 0), 0);
 
         const hours = Math.floor(totalTimeMinutes / 60);
         const minutes = totalTimeMinutes % 60;
@@ -79,11 +90,79 @@ const Overview = () => {
             totalTime: totalTimeMinutes,
             avgCalories,
             timeFormatted,
-            totalFatLoss
+            totalFatLoss,
+            todayCalories
         };
     };
 
     const metrics = calculateMetrics();
+
+    const CircularProgressCard = ({ calories, goal }) => {
+        const percentage = Math.min((calories / goal) * 100, 100);
+
+        return (
+            <Card sx={{
+                backgroundColor: mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                border: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0',
+                borderRadius: 3,
+                boxShadow: mode === 'dark'
+                    ? '0 2px 8px rgba(0,0,0,0.3)'
+                    : '0 2px 8px rgba(0,0,0,0.1)',
+                p: 3
+            }}>
+                <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                    <Typography variant="h6" sx={{
+                        color: mode === 'dark' ? '#999' : '#666',
+                        fontWeight: 500
+                    }}>
+                        Today's Progress
+                    </Typography>
+
+                    <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CircularProgress
+                            variant="determinate"
+                            value={percentage}
+                            size={150}
+                            thickness={4}
+                            sx={{
+                                color: percentage >= 100 ? '#4caf50' : '#ff9800'
+                            }}
+                        />
+                        <Box sx={{
+                            position: 'absolute',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: 0.5
+                        }}>
+                            <Typography variant="h4" sx={{
+                                color: mode === 'dark' ? '#fff' : '#333',
+                                fontWeight: 'bold'
+                            }}>
+                                {Math.round(percentage)}%
+                            </Typography>
+                            <Typography variant="body2" sx={{
+                                color: mode === 'dark' ? '#999' : '#666',
+                                textAlign: 'center'
+                            }}>
+                                {calories} / {goal} kcal
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    {percentage >= 100 && (
+                        <Typography variant="body2" sx={{
+                            color: '#4caf50',
+                            fontWeight: 'bold',
+                            mt: 1
+                        }}>
+                            ✅ Goal Completed!
+                        </Typography>
+                    )}
+                </CardContent>
+            </Card>
+        );
+    };
 
     // helper to compute BMR from profile
     const calculateBmr = (prof) => {
@@ -184,6 +263,18 @@ const Overview = () => {
             }}>
                 Overview
             </Typography>
+
+            {/* Daily Progress Section */}
+            <Box sx={{ mb: 4 }}>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={5}>
+                        <CircularProgressCard calories={metrics.todayCalories} goal={200} />
+                    </Grid>
+                    <Grid item xs={12} md={7}>
+                        <ActivityCharts activities={activities} />
+                    </Grid>
+                </Grid>
+            </Box>
 
             {/* Stats Grid */}
             <Grid container spacing={3}>

@@ -8,10 +8,11 @@ import { setCredentials, logout } from "./store/authSlice";
 import ActivityForm from "./components/ActivityForm";
 import ActivityList from "./components/ActivityList";
 import ActivityDetail from "./components/ActivityDetail";
+import ActivityTimer from "./components/ActivityTimer";
 import ProfileSetup from "./components/ProfileSetup";
 import Navbar from "./components/Navbar";
 import Overview from "./components/Overview";
-import { getProfile } from "./services/api";
+import { getProfile, claimLoginReward } from "./services/api";
 import "./App.css";
 
 const ActvitiesPage = () => {
@@ -60,11 +61,11 @@ const AppRoutes = ({ logOut }) => {
         .then(() => {
           // Profile exists, stay on current page or dashboard
         })
-       .catch((error) => {
-  if (error.response?.status === 404) {
-    navigate("/profile-setup");
-  }
-});
+        .catch((error) => {
+          if (error.response?.status === 404) {
+            navigate("/profile-setup");
+          }
+        });
     }
   }, [userId, navigate, location.pathname]);
 
@@ -74,6 +75,7 @@ const AppRoutes = ({ logOut }) => {
       <Box sx={{ p: 2, flex: 1 }}>
         <Routes>
           <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/activity-timer" element={<ActivityTimer />} />
           <Route path="/activities" element={<ActvitiesPage />} />
           <Route path="/activities/:id" element={<ActivityDetail />} />
           <Route path="/" element={<Navigate to="/activities" replace />} />
@@ -98,6 +100,24 @@ function App() {
     if (token) {
       dispatch(setCredentials({ token, user: tokenData }));
       setAuthReady(true);
+
+      // Claim daily login reward
+      const claimDailyReward = async () => {
+        try {
+          const today = new Date().toISOString().split('T')[0];
+          const lastLoginRewardDate = localStorage.getItem('lastLoginRewardDate');
+
+          if (lastLoginRewardDate !== today) {
+            await claimLoginReward();
+            localStorage.setItem('lastLoginRewardDate', today);
+            console.log("Login reward claimed!");
+          }
+        } catch (error) {
+          console.error("Error claiming login reward:", error);
+        }
+      };
+
+      claimDailyReward();
     }
   }, [token, tokenData, dispatch]);
 

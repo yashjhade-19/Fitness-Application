@@ -43,3 +43,7 @@ export const logoutUser = () => {
     localStorage.removeItem('userId');
     return Promise.resolve();
 };
+
+export const claimLoginReward = () => api.post('/users/profile/claim-login-reward', {});
+
+export const claimGoalReward = () => api.post('/users/profile/claim-goal-reward', {});

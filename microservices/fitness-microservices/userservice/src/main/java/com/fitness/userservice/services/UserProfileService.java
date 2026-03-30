@@ -67,4 +67,74 @@ public class UserProfileService {
 
         return userProfileRepository.save(profile);
     }
+
+
+    public UserProfile claimLoginReward(String userId) {
+
+        UserProfile profile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "User profile not found"
+                        )
+                );
+
+        String today = java.time.LocalDate.now().toString();
+
+        // ❌ already claimed today
+        if (today.equals(profile.getLastLoginDate())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Login reward already claimed today"
+            );
+        }
+
+        // ✅ initialize coins if null
+        if (profile.getTotalCoins() == null) {
+            profile.setTotalCoins(0);
+        }
+
+        // ✅ add coins
+        profile.setTotalCoins(profile.getTotalCoins() + 10);
+
+        // ✅ update last login date
+        profile.setLastLoginDate(today);
+
+        return userProfileRepository.save(profile);
+    }
+
+    
+    public UserProfile claimGoalReward(String userId) {
+
+        UserProfile profile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "User profile not found"
+                        )
+                );
+
+        String today = java.time.LocalDate.now().toString();
+
+        // ❌ already claimed today
+        if (today.equals(profile.getLastGoalRewardDate())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Goal reward already claimed today"
+            );
+        }
+
+        // ✅ initialize coins if null
+        if (profile.getTotalCoins() == null) {
+            profile.setTotalCoins(0);
+        }
+
+        // ✅ add coins
+        profile.setTotalCoins(profile.getTotalCoins() + 25);
+
+        // ✅ update reward date
+        profile.setLastGoalRewardDate(today);
+
+        return userProfileRepository.save(profile);
+    }
 }
