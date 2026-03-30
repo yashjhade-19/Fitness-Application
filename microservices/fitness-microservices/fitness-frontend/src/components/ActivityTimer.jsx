@@ -426,8 +426,8 @@ const ActivityTimer = () => {
                     sx={{
                         width: '100%',
                         backgroundColor: snackbar.severity === 'success' ? '#4caf50' :
-                                        snackbar.severity === 'error' ? '#f44336' :
-                                        snackbar.severity === 'warning' ? '#ff9800' : '#2196f3',
+                            snackbar.severity === 'error' ? '#f44336' :
+                                snackbar.severity === 'warning' ? '#ff9800' : '#2196f3',
                         color: '#fff'
                     }}
                 >
