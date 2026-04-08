@@ -14,16 +14,30 @@ import { useTheme } from '../context/ThemeContext'
 
 // Activity icons
 const ACTIVITY_ICONS = {
-  RUNNING: '🏃',
-  WALKING: '🚶',
-  CYCLING: '🚴',
+  RUNNING: '🏃‍♂️',
+  WALKING: '🚶‍♂️',
+  CYCLING: '🚴‍♂️',
   SWIMMING: '🏊',
-  WEIGHT_TRAINING: '⛹️',
-  YOGA: '🧘',
+  WEIGHT_TRAINING: '🏋️‍♂️',
+  YOGA: '🧘‍♀️',
   HIIT: '⚡',
-  CARDIO: '❤️',
-  STRETCHING: '🤸',
-  OTHER: '🎯'
+  CARDIO: '🤾‍♂️',
+  STRETCHING: '🤸‍♂️',
+  OTHER: '🧎‍♂️‍➡️'
+};
+
+// Activity type mapping
+const ACTIVITY_TYPES = {
+  RUNNING: 'Running',
+  WALKING: 'Walking',
+  CYCLING: 'Cycling',
+  SWIMMING: 'Swimming',
+  WEIGHT_TRAINING: 'Weight Training',
+  YOGA: 'Yoga',
+  HIIT: 'HIIT',
+  CARDIO: 'Cardio',
+  STRETCHING: 'Stretching',
+  OTHER: 'Other'
 };
 
 const ActivityCard = ({ activity, mode }) => {
@@ -37,11 +51,11 @@ const ActivityCard = ({ activity, mode }) => {
   // Status badge
   const getStatusBadge = () => {
     if (activity.caloriesBurned >= calorieGoal) {
-      return { label: '🎯 Goal Met', color: '#FFD700' };
+      return { label: 'Goal Met', color: '#FFD700' };
     } else if (activity.caloriesBurned > 0) {
-      return { label: '⚡ Partial', color: '#FFC107' };
+      return { label: 'In Progress', color: '#FFC107' };
     }
-    return { label: '📊 Tracked', color: '#6B7280' };
+    return { label: 'Tracked', color: '#6B7280' };
   };
 
   const status = getStatusBadge();
@@ -87,7 +101,7 @@ const ActivityCard = ({ activity, mode }) => {
                   mb: 0.25
                 }}
               >
-                {activityType.replace(/_/g, ' ')}
+                {ACTIVITY_TYPES[activityType] || activityType.replace(/_/g, ' ')}
               </Typography>
               <Typography
                 variant="caption"
@@ -107,7 +121,7 @@ const ActivityCard = ({ activity, mode }) => {
             size="small"
             sx={{
               backgroundColor: status.color,
-              color: '#000',
+              color: status.color === '#FFD700' ? '#1a1a2e' : '#fff',
               fontWeight: 700,
               fontSize: '0.7rem',
               height: 24
@@ -133,7 +147,7 @@ const ActivityCard = ({ activity, mode }) => {
                 mb: 0.5
               }}
             >
-              ⏱️ Duration
+              Duration
             </Typography>
             <Typography
               variant="h6"
@@ -161,7 +175,7 @@ const ActivityCard = ({ activity, mode }) => {
                 mb: 0.5
               }}
             >
-              🔥 Calories
+              Calories
             </Typography>
             <Typography
               variant="h6"
@@ -189,7 +203,7 @@ const ActivityCard = ({ activity, mode }) => {
                 mb: 0.5
               }}
             >
-              📉 Fat Loss
+              Fat Loss
             </Typography>
             <Typography
               variant="body2"
@@ -216,7 +230,7 @@ const ActivityCard = ({ activity, mode }) => {
                 mb: 0.5
               }}
             >
-              🎯 Progress
+              Progress
             </Typography>
             <Typography
               variant="body2"
@@ -260,7 +274,7 @@ const ActivityCard = ({ activity, mode }) => {
             }
           }}
         >
-          → View Analysis
+          View Details →
         </Typography>
       </CardContent>
     </Card>
@@ -310,10 +324,10 @@ const ActivityList = () => {
         }}
       >
         <Typography variant="h6" sx={{ color: mode === 'dark' ? '#B0B0B0' : '#6B7280', mb: 1 }}>
-          No activities yet 💪
+          No activities yet
         </Typography>
         <Typography variant="body2" sx={{ color: mode === 'dark' ? '#9CA3AF' : '#9CA3AF' }}>
-          Start logging your workouts!
+          Start logging your workouts
         </Typography>
       </Box>
     );

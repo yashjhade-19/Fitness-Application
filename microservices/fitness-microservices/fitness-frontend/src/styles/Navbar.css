@@ -43,7 +43,7 @@
 }
 
 [data-theme="light"] .navbar-title {
-    color: #1976d2;
+    color: #FFD700;
 }
 
 .navbar-subtitle {
@@ -53,7 +53,7 @@
 }
 
 [data-theme="light"] .navbar-subtitle {
-    color: #666;
+    color: #777;
 }
 
 .navbar-center {

@@ -204,16 +204,16 @@ const ConsistencyCalendar = ({ activities = [], showStats = true }) => {
                 {/* Stats Footer */}
                 {showStats && (
                     <Box sx={{ borderTop: mode === 'dark' ? '1px solid #333' : '1px solid #ddd', pt: 1.5, display: 'flex', gap: 1 }}>
-                        <StatItem label="📊 Days" value={`${activeDays}/${daysInMonth}`} mode={mode} />
-                        <StatItem label="🔥 Streak" value={streakData.current} mode={mode} />
-                        <StatItem label="✨ Best" value={streakData.best} mode={mode} />
+                        <StatItem label=" Days" value={`${activeDays}/${daysInMonth}`} mode={mode} />
+                        <StatItem label=" Streak" value={streakData.current} mode={mode} />
+                        <StatItem label=" Best" value={streakData.best} mode={mode} />
                     </Box>
                 )}
 
                 {/* Empty State */}
                 {activities.length === 0 && (
                     <Typography sx={{ textAlign: 'center', fontSize: '0.9rem', color: mode === 'dark' ? '#9ca3af' : '#6b7280', py: 2 }}>
-                        No activity yet 💪
+                        No activity yet 
                     </Typography>
                 )}
             </CardContent>

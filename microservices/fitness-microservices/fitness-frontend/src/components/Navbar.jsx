@@ -9,6 +9,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useTheme } from "../context/ThemeContext";
 import GamificationModal from "./GamificationModal";
+import FitZipLogo from "./FitZipLogo.png";
 import "../styles/Navbar.css";
 
 const Navbar = ({ onLogout }) => {
@@ -241,10 +242,27 @@ const Navbar = ({ onLogout }) => {
 
     return (
         <>
-            <Box className="navbar-container">
+            <Box
+                className="navbar-container"
+                data-theme={mode}
+                sx={{
+                    background: mode === 'dark'
+                        ? 'linear-gradient(90deg, #1a1a2e 0%, #16213e 100%)'
+                        : 'linear-gradient(90deg, #ffffff 0%, #f8f9fa 100%)',
+                    boxShadow: mode === 'dark'
+                        ? '0 4px 12px rgba(0, 0, 0, 0.15)'
+                        : '0 2px 8px rgba(0, 0, 0, 0.1)'
+                }}
+            >
                 <Box className="navbar-left">
                     <Box className="navbar-logo">
-                        <span className="logo-icon">⚕️</span>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 50, width: 50, flexShrink: 0, borderRadius: '50%', overflow: 'hidden' }}>
+                            <img
+                                src={FitZipLogo}
+                                alt="FitZip Logo"
+                                style={{ height: '100%', width: '100%', objectFit: 'contain' }}
+                            />
+                        </Box>
                         <Typography variant="h6" className="navbar-title">
                             FitZip Pro
                         </Typography>

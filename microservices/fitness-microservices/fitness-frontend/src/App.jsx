@@ -54,6 +54,7 @@ const AppRoutes = ({ logOut }) => {
   const userId = useSelector((state) => state.auth.userId);
   const navigate = useNavigate();
   const location = useLocation();
+  const { mode } = useTheme();
 
   useEffect(() => {
     if (userId && location.pathname !== "/profile-setup") {
@@ -70,7 +71,7 @@ const AppRoutes = ({ logOut }) => {
   }, [userId, navigate, location.pathname]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', backgroundColor: '#121212' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', backgroundColor: mode === 'dark' ? '#121212' : '#f5f5f5' }}>
       <Navbar onLogout={logOut} />
       <Box sx={{ flex: 1, width: '100%', overflow: 'auto' }}>
         <Routes>
