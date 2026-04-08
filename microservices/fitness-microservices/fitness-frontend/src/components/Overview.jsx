@@ -6,6 +6,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { useTheme } from "../context/ThemeContext";
+import ConsistencyCalendar from "./ConsistencyCalendar";
 import ActivityCharts from "./ActivityCharts";
 
 const Overview = () => {
@@ -102,7 +103,7 @@ const Overview = () => {
 
         return (
             <Card sx={{
-                backgroundColor: mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                backgroundColor: mode === 'dark' ? '#1E1E1E' : '#ffffff',
                 border: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0',
                 borderRadius: 3,
                 boxShadow: mode === 'dark'
@@ -112,7 +113,7 @@ const Overview = () => {
             }}>
                 <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                     <Typography variant="h6" sx={{
-                        color: mode === 'dark' ? '#999' : '#666',
+                        color: mode === 'dark' ? '#B0B0B0' : '#666',
                         fontWeight: 500
                     }}>
                         Today's Progress
@@ -125,7 +126,7 @@ const Overview = () => {
                             size={150}
                             thickness={4}
                             sx={{
-                                color: percentage >= 100 ? '#4caf50' : '#ff9800'
+                                color: percentage >= 100 ? '#FFD700' : '#FFC107'
                             }}
                         />
                         <Box sx={{
@@ -136,13 +137,13 @@ const Overview = () => {
                             gap: 0.5
                         }}>
                             <Typography variant="h4" sx={{
-                                color: mode === 'dark' ? '#fff' : '#333',
+                                color: mode === 'dark' ? '#FFFFFF' : '#333',
                                 fontWeight: 'bold'
                             }}>
                                 {Math.round(percentage)}%
                             </Typography>
                             <Typography variant="body2" sx={{
-                                color: mode === 'dark' ? '#999' : '#666',
+                                color: mode === 'dark' ? '#B0B0B0' : '#666',
                                 textAlign: 'center'
                             }}>
                                 {calories} / {goal} kcal
@@ -152,7 +153,7 @@ const Overview = () => {
 
                     {percentage >= 100 && (
                         <Typography variant="body2" sx={{
-                            color: '#4caf50',
+                            color: '#FFD700',
                             fontWeight: 'bold',
                             mt: 1
                         }}>
@@ -264,14 +265,17 @@ const Overview = () => {
                 Overview
             </Typography>
 
-            {/* Daily Progress Section */}
+            {/* Daily Progress Section with Calendar - 3 Column Layout */}
             <Box sx={{ mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={5}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <CircularProgressCard calories={metrics.todayCalories} goal={200} />
                     </Grid>
-                    <Grid item xs={12} md={7}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <ActivityCharts activities={activities} />
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <ConsistencyCalendar activities={activities} showStats={true} />
                     </Grid>
                 </Grid>
             </Box>

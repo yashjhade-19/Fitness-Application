@@ -34,10 +34,10 @@ export const ThemeProviderWrapper = ({ children }) => {
                 ? {
                     // Light theme
                     primary: {
-                        main: '#1976d2',
+                        main: '#FFD700',
                     },
                     secondary: {
-                        main: '#dc004e',
+                        main: '#FFC107',
                     },
                     background: {
                         default: '#f5f5f5',
@@ -49,20 +49,20 @@ export const ThemeProviderWrapper = ({ children }) => {
                     },
                 }
                 : {
-                    // Dark theme
+                    // Dark theme - Yellow + Dark Yellow + Black
                     primary: {
-                        main: '#90caf9',
+                        main: '#FFD700',
                     },
                     secondary: {
-                        main: '#f48fb1',
+                        main: '#FFC107',
                     },
                     background: {
-                        default: '#0a0a0a',
-                        paper: '#1a1a1a',
+                        default: '#121212',
+                        paper: '#1E1E1E',
                     },
                     text: {
-                        primary: '#ffffff',
-                        secondary: '#b0b0b0',
+                        primary: '#FFFFFF',
+                        secondary: '#B0B0B0',
                     },
                 }),
         },

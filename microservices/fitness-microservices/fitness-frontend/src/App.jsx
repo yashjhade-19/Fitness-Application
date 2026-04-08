@@ -19,11 +19,11 @@ const ActvitiesPage = () => {
   const { mode } = useTheme();
 
   return (
-    <Box sx={{ backgroundColor: mode === 'dark' ? '#0a0a0a' : '#f5f5f5', minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: mode === 'dark' ? '#121212' : '#f5f5f5', minHeight: '100vh', width: '100%' }}>
       <Overview />
       <Box sx={{
         p: 3,
-        backgroundColor: mode === 'dark' ? '#0a0a0a' : '#f5f5f5',
+        backgroundColor: mode === 'dark' ? '#121212' : '#f5f5f5',
         borderTop: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0',
         mt: 0
       }}>
@@ -70,9 +70,9 @@ const AppRoutes = ({ logOut }) => {
   }, [userId, navigate, location.pathname]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', backgroundColor: '#121212' }}>
       <Navbar onLogout={logOut} />
-      <Box sx={{ p: 2, flex: 1 }}>
+      <Box sx={{ flex: 1, width: '100%', overflow: 'auto' }}>
         <Routes>
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/activity-timer" element={<ActivityTimer />} />

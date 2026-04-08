@@ -33,7 +33,7 @@ const ActivityCharts = ({ activities }) => {
     return (
         <Box sx={{ width: '100%' }}>
             <Card sx={{
-                backgroundColor: mode === 'dark' ? '#1a1a1a' : '#ffffff',
+                backgroundColor: mode === 'dark' ? '#1E1E1E' : '#ffffff',
                 border: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0',
                 borderRadius: 3,
                 boxShadow: mode === 'dark'
@@ -43,7 +43,7 @@ const ActivityCharts = ({ activities }) => {
             }}>
                 <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" sx={{
-                        color: mode === 'dark' ? '#fff' : '#333',
+                        color: mode === 'dark' ? '#FFD700' : '#333',
                         fontWeight: 'bold',
                         mb: 2
                     }}>
@@ -55,23 +55,23 @@ const ActivityCharts = ({ activities }) => {
                                 strokeDasharray="3 3"
                                 stroke={mode === 'dark' ? '#333' : '#eee'}
                             />
-                            <XAxis stroke={mode === 'dark' ? '#999' : '#666'} />
-                            <YAxis stroke={mode === 'dark' ? '#999' : '#666'} />
+                            <XAxis stroke={mode === 'dark' ? '#B0B0B0' : '#666'} />
+                            <YAxis stroke={mode === 'dark' ? '#B0B0B0' : '#666'} />
                             <Tooltip
                                 contentStyle={{
-                                    backgroundColor: mode === 'dark' ? '#2a2a2a' : '#fff',
-                                    border: `1px solid ${mode === 'dark' ? '#333' : '#eee'}`,
+                                    backgroundColor: mode === 'dark' ? '#1E1E1E' : '#fff',
+                                    border: `2px solid ${mode === 'dark' ? '#FFD700' : '#333'}`,
                                     borderRadius: 8,
-                                    color: mode === 'dark' ? '#fff' : '#333'
+                                    color: mode === 'dark' ? '#FFD700' : '#333'
                                 }}
                             />
                             <Legend />
                             <Line
                                 type="monotone"
                                 dataKey="calories"
-                                stroke="#FF6B6B"
+                                stroke="#FFD700"
                                 strokeWidth={2}
-                                dot={{ fill: '#FF6B6B', r: 4 }}
+                                dot={{ fill: '#FFC107', r: 4 }}
                                 activeDot={{ r: 6 }}
                             />
                         </LineChart>

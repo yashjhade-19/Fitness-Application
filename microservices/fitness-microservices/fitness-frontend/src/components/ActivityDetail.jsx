@@ -78,7 +78,7 @@ const ActivityDetail = () => {
       {/* Activity Info */}
       <Card sx={{
         mb: 2,
-        backgroundColor: mode === 'dark' ? '#1a1a1a' : '#ffffff',
+        backgroundColor: mode === 'dark' ? '#1E1E1E' : '#ffffff',
         border: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0'
       }}>
         <CardContent>
@@ -121,7 +121,7 @@ const ActivityDetail = () => {
       {recommendation && (
 
         <Card sx={{
-          backgroundColor: mode === 'dark' ? '#1a1a1a' : '#ffffff',
+          backgroundColor: mode === 'dark' ? '#1E1E1E' : '#ffffff',
           border: mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0'
         }}>
           <CardContent>
