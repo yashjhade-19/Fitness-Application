@@ -12,6 +12,7 @@ import ActivityTimer from "./components/ActivityTimer";
 import ProfileSetup from "./components/ProfileSetup";
 import Navbar from "./components/Navbar";
 import Overview from "./components/Overview";
+import GamificationModal from "./components/GamificationModal";
 import { getProfile, claimLoginReward } from "./services/api";
 import "./App.css";
 
@@ -90,6 +91,12 @@ function App() {
   const { token, tokenData, logIn, logOut, isAuthenticated } = useContext(AuthContext);
   const dispatch = useDispatch();
   const [authReady, setAuthReady] = useState(false);
+  const [rewardModal, setRewardModal] = useState({
+    open: false,
+    title: "",
+    message: "",
+    coins: 0
+  });
 
   // make sure we clear Redux when the user logs out via auth context
   const handleLogout = () => {
@@ -109,9 +116,18 @@ function App() {
           const lastLoginRewardDate = localStorage.getItem('lastLoginRewardDate');
 
           if (lastLoginRewardDate !== today) {
-            await claimLoginReward();
+            const response = await claimLoginReward();
             localStorage.setItem('lastLoginRewardDate', today);
-            console.log("Login reward claimed!");
+
+            // Show reward modal with the data from response
+            const coins = response?.data?.coins || 10;
+            setRewardModal({
+              open: true,
+              title: "Daily Login Reward",
+              message: "Great! You've earned your daily login bonus!",
+              coins: coins
+            });
+            console.log("Login reward claimed!", coins);
           }
         } catch (error) {
           console.error("Error claiming login reward:", error);
@@ -124,6 +140,17 @@ function App() {
 
   return (
     <Router>
+      <GamificationModal
+        open={rewardModal.open}
+        onClose={() => setRewardModal({ ...rewardModal, open: false })}
+        title={rewardModal.title}
+        message={rewardModal.message}
+        coins={rewardModal.coins}
+        onClaim={async () => {
+          // Reward already claimed, just close modal
+          setRewardModal({ ...rewardModal, open: false });
+        }}
+      />
       {!token ? (
         <Box
           sx={{

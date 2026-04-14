@@ -51,16 +51,16 @@ const ActivityForm = ({ onActivityAdded }) => {
                         onChange={(e) => setActivity({ ...activity, type: e.target.value })}
                         label="Activity Type"
                     >
-                        <MenuItem value="RUNNING">🏃 Running</MenuItem>
-                        <MenuItem value="WALKING">🚶 Walking</MenuItem>
-                        <MenuItem value="CYCLING">🚴 Cycling</MenuItem>
+                        <MenuItem value="RUNNING">🏃‍♂️ Running</MenuItem>
+                        <MenuItem value="WALKING">🚶‍♂️ Walking</MenuItem>
+                        <MenuItem value="CYCLING">🚴‍♂️ Cycling</MenuItem>
                         <MenuItem value="SWIMMING">🏊 Swimming</MenuItem>
-                        <MenuItem value="WEIGHT_TRAINING">⛹️ Weight Training</MenuItem>
-                        <MenuItem value="YOGA">🧘 Yoga</MenuItem>
+                        <MenuItem value="WEIGHT_TRAINING">🏋️‍♂️ Weight Training</MenuItem>
+                        <MenuItem value="YOGA">🧘‍♀️ Yoga</MenuItem>
                         <MenuItem value="HIIT">⚡ HIIT</MenuItem>
-                        <MenuItem value="CARDIO">❤️ Cardio</MenuItem>
-                        <MenuItem value="STRETCHING">🤸 Stretching</MenuItem>
-                        <MenuItem value="OTHER">🎯 Other</MenuItem>
+                        <MenuItem value="CARDIO">🤾‍♂️ Cardio</MenuItem>
+                        <MenuItem value="STRETCHING">🤸‍♂️ Stretching</MenuItem>
+                        <MenuItem value="OTHER">🧎‍♂️‍➡️ Other</MenuItem>
                     </Select>
                 </FormControl>
 
